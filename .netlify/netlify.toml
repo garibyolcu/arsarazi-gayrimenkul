@@ -1,0 +1,55 @@
+redirectsOrigin = "config"
+plugins = []
+functionsDirectory = "/mnt/agents/output/app/dist/functions"
+functionsDirectoryOrigin = "config-v1"
+headers = []
+
+[functions]
+
+[functions."*"]
+node_bundler = "esbuild"
+
+[build]
+publish = "/mnt/agents/output/app/dist/public"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npm run build"
+functions = "/mnt/agents/output/app/dist/functions"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/api/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
