@@ -2,7 +2,7 @@ import { z } from "zod";
 import bcryptjs from "bcryptjs";
 import * as cookie from "cookie";
 import { TRPCError } from "@trpc/server";
-import { createRouter, publicQuery, authedQuery, adminQuery } from "./middleware";
+import { createRouter, publicQuery, adminQuery } from "./middleware";
 import { createLocalSessionToken, LOCAL_COOKIE_NAME } from "./local-auth";
 import { getSessionCookieOptions } from "./lib/cookies";
 import { getDb } from "./queries/connection";
@@ -10,7 +10,8 @@ import { users } from "@db/schema";
 import { eq } from "drizzle-orm";
 
 export const authRouter = createRouter({
-  me: authedQuery.query((opts) => {
+  me: publicQuery.query(async (opts) => {
+    if (!opts.ctx.user) return null;
     const u = opts.ctx.user;
     return {
       id: u.id,
@@ -77,7 +78,7 @@ export const authRouter = createRouter({
       };
     }),
 
-  logout: authedQuery.mutation(async ({ ctx }) => {
+  logout: publicQuery.mutation(async ({ ctx }) => {
     const opts = getSessionCookieOptions(ctx.req.headers);
     ctx.resHeaders.append(
       "set-cookie",
