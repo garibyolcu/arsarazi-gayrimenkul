@@ -18,6 +18,7 @@ import { useAuth } from "./hooks/useAuth"
 
 function RequireAuth({ children, minRole }: { children: React.ReactNode; minRole?: string }) {
   const { user, isLoading } = useAuth({ redirectOnUnauthenticated: true });
+  
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -25,23 +26,31 @@ function RequireAuth({ children, minRole }: { children: React.ReactNode; minRole
       </div>
     );
   }
+  
   if (!user) return <Navigate to="/login" />;
+  
   const ROLE_HIERARCHY: Record<string, number> = { VIEWER: 1, AGENT: 2, MANAGER: 3, ADMIN: 4 };
   if (minRole && (ROLE_HIERARCHY[user.role] ?? 0) < (ROLE_HIERARCHY[minRole] ?? 0)) {
     return <Navigate to="/admin" />;
   }
+  
   return <>{children}</>;
 }
 
 export default function App() {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/ilanlar" element={<PropertyList />} />
       <Route path="/ilanlar/:slug" element={<PropertyDetail />} />
       <Route path="/hakkimizda" element={<About />} />
       <Route path="/iletisim" element={<Contact />} />
+      
+      {/* Auth */}
       <Route path="/login" element={<Login />} />
+      
+      {/* Admin Routes */}
       <Route path="/admin" element={<RequireAuth><AdminLayout /></RequireAuth>}>
         <Route index element={<Dashboard />} />
         <Route path="portfolios" element={<RequireAuth minRole="AGENT"><Portfolios /></RequireAuth>} />
@@ -51,6 +60,7 @@ export default function App() {
         <Route path="reports" element={<RequireAuth minRole="MANAGER"><Reports /></RequireAuth>} />
         <Route path="settings" element={<RequireAuth minRole="ADMIN"><Settings /></RequireAuth>} />
       </Route>
+      
       <Route path="*" element={<NotFound />} />
     </Routes>
   )

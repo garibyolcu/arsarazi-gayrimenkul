@@ -2,7 +2,7 @@ import { z } from "zod";
 import { eq, and, gte, lte, like, desc, asc, sql } from "drizzle-orm";
 import { createRouter, publicQuery, authedQuery, managerQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { properties, propertyImages } from "@db/schema";
+import { properties, propertyImages, users } from "@db/schema";
 import { TRPCError } from "@trpc/server";
 
 const propertyFilterSchema = z.object({
@@ -58,13 +58,32 @@ export const propertyRouter = createRouter({
               ? asc(properties.createdAt)
               : desc(properties.createdAt);
 
-      const items = await db.query.properties.findMany({
-        where,
-        orderBy,
-        limit: input.limit,
-        offset,
-        with: { images: true, agent: true },
-      });
+      const itemsRaw = await db
+        .select()
+        .from(properties)
+        .where(where)
+        .orderBy(orderBy)
+        .limit(input.limit)
+        .offset(offset);
+
+      // Fetch related data separately for MySQL compatibility
+      const items = await Promise.all(
+        itemsRaw.map(async (p) => {
+          const images = await db
+            .select()
+            .from(propertyImages)
+            .where(eq(propertyImages.propertyId, p.id));
+          const agent = p.agentId
+            ? await db
+                .select()
+                .from(users)
+                .where(eq(users.id, p.agentId))
+                .limit(1)
+                .then((rows) => rows[0] || null)
+            : null;
+          return { ...p, images, agent };
+        })
+      );
 
       const countResult = await db
         .select({ count: sql<number>`COUNT(*)` })
