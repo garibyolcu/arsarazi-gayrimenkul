@@ -23,11 +23,28 @@ const requireAuth = t.middleware(async (opts) => {
   return next({ ctx: { ...ctx, user: ctx.user } });
 });
 
-function requireRole(role: string) {
+const ROLE_HIERARCHY: Record<string, number> = {
+  VIEWER: 1,
+  AGENT: 2,
+  MANAGER: 3,
+  ADMIN: 4,
+};
+
+function requireMinimumRole(minRole: string) {
   return t.middleware(async (opts) => {
     const { ctx, next } = opts;
 
-    if (!ctx.user || ctx.user.role !== role) {
+    if (!ctx.user) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: ErrorMessages.unauthenticated,
+      });
+    }
+
+    const userLevel = ROLE_HIERARCHY[ctx.user.role] ?? 0;
+    const requiredLevel = ROLE_HIERARCHY[minRole] ?? 0;
+
+    if (userLevel < requiredLevel) {
       throw new TRPCError({
         code: "FORBIDDEN",
         message: ErrorMessages.insufficientRole,
@@ -39,4 +56,6 @@ function requireRole(role: string) {
 }
 
 export const authedQuery = t.procedure.use(requireAuth);
-export const adminQuery = authedQuery.use(requireRole("admin"));
+export const adminQuery = authedQuery.use(requireMinimumRole("ADMIN"));
+export const managerQuery = authedQuery.use(requireMinimumRole("MANAGER"));
+export const agentQuery = authedQuery.use(requireMinimumRole("AGENT"));
