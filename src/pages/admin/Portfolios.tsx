@@ -109,12 +109,12 @@ export default function Portfolios() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input className="pl-9" placeholder="Portföy ara..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <Select value={statusFilter || "_all"} onValueChange={(v) => setStatusFilter(v === "_all" ? "" : v)}>
           <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="Durum" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Tümü</SelectItem>
+            <SelectItem value="_all">Tümü</SelectItem>
             <SelectItem value="ACTIVE">Aktif</SelectItem>
             <SelectItem value="PASSIVE">Pasif</SelectItem>
             <SelectItem value="POTENTIAL">Potansiyel</SelectItem>
@@ -122,12 +122,12 @@ export default function Portfolios() {
             <SelectItem value="RENTED">Kiralandı</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
+        <Select value={typeFilter || "_all"} onValueChange={(v) => setTypeFilter(v === "_all" ? "" : v)}>
           <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="Tip" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Tümü</SelectItem>
+            <SelectItem value="_all">Tümü</SelectItem>
             <SelectItem value="APARTMENT">Daire</SelectItem>
             <SelectItem value="HOUSE">Villa</SelectItem>
             <SelectItem value="LAND">Arsa</SelectItem>

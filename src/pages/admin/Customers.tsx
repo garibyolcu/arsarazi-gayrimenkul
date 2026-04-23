@@ -78,12 +78,12 @@ export default function Customers() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input className="pl-9" placeholder="Müşteri ara..." value={search} onChange={e => setSearch(e.target.value)} />
         </div>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
+        <Select value={typeFilter || "_all"} onValueChange={(v) => setTypeFilter(v === "_all" ? "" : v)}>
           <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Tüm Tipler" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Tümü</SelectItem>
+            <SelectItem value="_all">Tümü</SelectItem>
             {Object.entries(typeLabels).map(([k, v]) => (
               <SelectItem key={k} value={k}>{v}</SelectItem>
             ))}

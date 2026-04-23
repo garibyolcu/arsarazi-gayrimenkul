@@ -18,6 +18,41 @@ import {
 
 const COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
 
+function statusLabel(s: string) {
+  const labels: Record<string, string> = {
+    ACTIVE: "Aktif", PASSIVE: "Pasif", POTENTIAL: "Potansiyel",
+    SOLD: "Satıldı", RENTED: "Kiralandı",
+    LEAD: "Potansiyel", NEGOTIATION: "Müzakere", OFFER: "Teklif",
+    CONTRACT: "Sözleşme", CLOSED: "Tamamlandı", CANCELLED: "İptal",
+  };
+  return labels[s] || s;
+}
+
+function typeLabel(t: string) {
+  const labels: Record<string, string> = {
+    APARTMENT: "Daire", HOUSE: "Villa", LAND: "Arsa",
+    COMMERCIAL: "Ticari", OFFICE: "Ofis", WAREHOUSE: "Depo",
+    SALE: "Satış", RENT: "Kiralama", LEASE: "Kira Söz.", VALUATION: "Değerleme",
+  };
+  return labels[t] || t;
+}
+
+function sourceLabel(s: string) {
+  const labels: Record<string, string> = {
+    REFERRAL: "Referans", WEBSITE: "Web Sitesi",
+    SOCIAL_MEDIA: "Sosyal Medya", WALK_IN: "Yerinden", OTHER: "Diğer",
+  };
+  return labels[s] || s;
+}
+
+function leadStatusLabel(s: string) {
+  const labels: Record<string, string> = {
+    NEW: "Yeni", CONTACTED: "İletişime Geçildi",
+    QUALIFIED: "Nitelikli", CONVERTED: "Dönüştürüldü", LOST: "Kaybedildi",
+  };
+  return labels[s] || s;
+}
+
 export default function Reports() {
   const { data: portfolio, isLoading: pLoading } = trpc.report.portfolio.useQuery();
   const { data: txSummary, isLoading: tLoading } = trpc.report.transactionSummary.useQuery();
@@ -250,39 +285,4 @@ export default function Reports() {
       </Tabs>
     </div>
   );
-}
-
-function statusLabel(s: string) {
-  const labels: Record<string, string> = {
-    ACTIVE: "Aktif", PASSIVE: "Pasif", POTENTIAL: "Potansiyel",
-    SOLD: "Satıldı", RENTED: "Kiralandı",
-    LEAD: "Potansiyel", NEGOTIATION: "Müzakere", OFFER: "Teklif",
-    CONTRACT: "Sözleşme", CLOSED: "Tamamlandı", CANCELLED: "İptal",
-  };
-  return labels[s] || s;
-}
-
-function typeLabel(t: string) {
-  const labels: Record<string, string> = {
-    APARTMENT: "Daire", HOUSE: "Villa", LAND: "Arsa",
-    COMMERCIAL: "Ticari", OFFICE: "Ofis", WAREHOUSE: "Depo",
-    SALE: "Satış", RENT: "Kiralama", LEASE: "Kira Söz.", VALUATION: "Değerleme",
-  };
-  return labels[t] || t;
-}
-
-function sourceLabel(s: string) {
-  const labels: Record<string, string> = {
-    REFERRAL: "Referans", WEBSITE: "Web Sitesi",
-    SOCIAL_MEDIA: "Sosyal Medya", WALK_IN: "Yerinden", OTHER: "Diğer",
-  };
-  return labels[s] || s;
-}
-
-function leadStatusLabel(s: string) {
-  const labels: Record<string, string> = {
-    NEW: "Yeni", CONTACTED: "İletişime Geçildi",
-    QUALIFIED: "Nitelikli", CONVERTED: "Dönüştürüldü", LOST: "Kaybedildi",
-  };
-  return labels[s] || s;
 }
