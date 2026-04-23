@@ -1,13 +1,9 @@
-import { useNavigate } from "react-router";
 import { trpc } from "@/providers/trpc";
 
-export function useAuth({ redirectOnUnauthenticated = false } = {}) {
-  const navigate = useNavigate();
-
+export function useAuth() {
   const {
     data: user,
     isLoading,
-    error,
   } = trpc.auth.me.useQuery(undefined, {
     retry: false,
     refetchOnWindowFocus: false,
@@ -18,10 +14,6 @@ export function useAuth({ redirectOnUnauthenticated = false } = {}) {
       window.location.reload();
     },
   });
-
-  if (redirectOnUnauthenticated && !isLoading && error) {
-    navigate("/login");
-  }
 
   return {
     user: user ?? null,

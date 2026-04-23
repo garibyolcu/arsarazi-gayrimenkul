@@ -17,7 +17,8 @@ import { AdminLayout } from "./components/AdminLayout"
 import { useAuth } from "./hooks/useAuth"
 
 function RequireAuth({ children, minRole }: { children: React.ReactNode; minRole?: string }) {
-  const { user, isLoading } = useAuth({ redirectOnUnauthenticated: true });
+  const { user, isLoading } = useAuth();
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -25,11 +26,22 @@ function RequireAuth({ children, minRole }: { children: React.ReactNode; minRole
       </div>
     );
   }
-  if (!user) return <Navigate to="/login" />;
-  const ROLE_HIERARCHY: Record<string, number> = { VIEWER: 1, AGENT: 2, MANAGER: 3, ADMIN: 4 };
+
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
+  const ROLE_HIERARCHY: Record<string, number> = {
+    VIEWER: 1,
+    AGENT: 2,
+    MANAGER: 3,
+    ADMIN: 4,
+  };
+
   if (minRole && (ROLE_HIERARCHY[user.role] ?? 0) < (ROLE_HIERARCHY[minRole] ?? 0)) {
     return <Navigate to="/admin" />;
   }
+
   return <>{children}</>;
 }
 
